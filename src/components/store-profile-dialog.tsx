@@ -13,7 +13,7 @@ import { toast } from "sonner";
 
 const storeProfileSchema = z.object({
   name: z.string().min(1),
-  description: z.string(),
+  description: z.string().nullable(),
 })
 
 type StoreProfileSchema = z.infer<typeof storeProfileSchema>
@@ -39,23 +39,38 @@ export function StoreProfileDialog() {
     }
   })
 
+  // Função que lida com a manipulação do cache
+  function updateManagedRestaurantCache({ name, description }: StoreProfileSchema) {
+    const cached = queryClient.getQueryData<IGetManagedRestaurant>(['managed-restaurant'])
+
+    if (cached) {
+      queryClient.setQueryData<IGetManagedRestaurant>(['managed-restaurant'], {
+        ...cached,
+        name,
+        description
+      })
+    }
+
+    return { cached }
+
+    // queryClient.invalidateQueries({ queryKey: ['managed-restaurant'] })
+  }
+
+  // Mutação com UI otimista
   const { mutateAsync: updateProfileFn } = useMutation({
     mutationFn: updateProfile,
-    onSuccess(_, { description, name }) {
-      const cached = queryClient.getQueryData<IGetManagedRestaurant>(['managed-restaurant'])
-
-      if (cached) {
-        queryClient.setQueryData<IGetManagedRestaurant>(['managed-restaurant'], {
-          ...cached,
-          name,
-          description
-        })
+    onMutate({ description, name }) {
+      const { cached } = updateManagedRestaurantCache({ name, description })
+      return { previousProfile: cached }
+    },
+    onError(_error, _variables, context) {
+      if(context?.previousProfile) {
+        updateManagedRestaurantCache(context.previousProfile)
       }
-
-      // queryClient.invalidateQueries({ queryKey: ['managed-restaurant'] })
-    }
+    },
   })
 
+  // Execução da mutação
   async function handleUpdateProfile(data: StoreProfileSchema) {
     try {
       await updateProfileFn({
