@@ -5,8 +5,21 @@ import { Dialog, DialogTrigger } from '@/components/ui/dialog'
 import { TableCell, TableRow } from '@/components/ui/table'
 
 import { OrderDetails } from './order-details'
+import { OrderStatus } from '@/components/order-status'
+import { formatDistanceToNow } from 'date-fns'
+import { ptBR } from 'date-fns/locale'
 
-export function OrderTableRow() {
+interface IOrderTableRowProps {
+  order: {
+    orderId: string;
+    createdAt: string;
+    status: "pending" | "canceled" | "processing" | "delivering" | "delivered";
+    customerName: string;
+    total: number;
+  }
+}
+
+export function OrderTableRow({ order }: IOrderTableRowProps) {
   return (
     <TableRow>
       <TableCell>
@@ -22,20 +35,27 @@ export function OrderTableRow() {
         </Dialog>
       </TableCell>
 
-      <TableCell className="font-mono text-xs font-medium">1234de</TableCell>
+      <TableCell className="font-mono text-xs font-medium">{order.orderId}</TableCell>
 
-      <TableCell className="text-muted-foreground">há 14 minutos</TableCell>
-
-      <TableCell>
-        <div className="flex items-center gap-2">
-          <span className="size-2 rounded-full bg-slate-400" />
-          <span className="font-medium text-muted-foreground">Pendendente</span>
-        </div>
+      <TableCell className="text-muted-foreground">
+        {formatDistanceToNow(order.createdAt, {
+          locale: ptBR,
+          addSuffix: true
+        })}
       </TableCell>
 
-      <TableCell className="font-medium">Samuel Morais</TableCell>
+      <TableCell>
+        <OrderStatus status={order.status} />
+      </TableCell>
 
-      <TableCell className="font-medium">R$ 143,70</TableCell>
+      <TableCell className="font-medium">{order.customerName}</TableCell>
+
+      <TableCell className="font-medium">
+        {order.total.toLocaleString('pt-BR', {
+          style: 'currency',
+          currency: 'BRL'
+        })}
+      </TableCell>
 
       <TableCell>
         <Button variant="outline" size="xs">
