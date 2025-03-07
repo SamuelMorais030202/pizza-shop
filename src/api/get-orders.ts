@@ -15,10 +15,14 @@ interface iGetOrdersResponse {
   };
 }
 
-export async function getOrders() {
+export interface IGetOrdersParams {
+  pageIndex?: number | null;
+}
+
+export async function getOrders({ pageIndex }: IGetOrdersParams) {
   const response = await api.get<iGetOrdersResponse>('/orders', {
     params: {
-      pageIndex: 0,
+      pageIndex,
     }
   })
 
