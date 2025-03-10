@@ -1,25 +1,25 @@
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { formatDistanceToNow } from 'date-fns'
+import { ptBR } from 'date-fns/locale'
 import { ArrowRight, Search, X } from 'lucide-react'
+import { useState } from 'react'
 
+import { cancelOrder } from '@/api/cancel-order'
+import { IGetOrdersResponse } from '@/api/get-orders'
+import { OrderStatus } from '@/components/order-status'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogTrigger } from '@/components/ui/dialog'
 import { TableCell, TableRow } from '@/components/ui/table'
 
 import { OrderDetails } from './order-details'
-import { OrderStatus } from '@/components/order-status'
-import { formatDistanceToNow } from 'date-fns'
-import { ptBR } from 'date-fns/locale'
-import { useState } from 'react'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { cancelOrder } from '@/api/cancel-order'
-import { IGetOrdersResponse } from '@/api/get-orders'
 
 interface IOrderTableRowProps {
   order: {
-    orderId: string;
-    createdAt: string;
-    status: "pending" | "canceled" | "processing" | "delivering" | "delivered";
-    customerName: string;
-    total: number;
+    orderId: string
+    createdAt: string
+    status: 'pending' | 'canceled' | 'processing' | 'delivering' | 'delivered'
+    customerName: string
+    total: number
   }
 }
 
@@ -30,9 +30,9 @@ export function OrderTableRow({ order }: IOrderTableRowProps) {
 
   const { mutateAsync: cancelOrderFn } = useMutation({
     mutationFn: cancelOrder,
-    onSuccess(_data, { orderId }, _context) {
+    onSuccess(_data, { orderId }) {
       const ordersListCache = queryClient.getQueriesData<IGetOrdersResponse>({
-        queryKey: ['orders']
+        queryKey: ['orders'],
       })
 
       ordersListCache.forEach(([cacheKey, cacheData]) => {
@@ -51,13 +51,13 @@ export function OrderTableRow({ order }: IOrderTableRowProps) {
           }),
         })
       })
-    }
+    },
   })
 
   return (
     <TableRow>
       <TableCell>
-        <Dialog open={isDetailsOpen}onOpenChange={setIsDetailsOpen}>
+        <Dialog open={isDetailsOpen} onOpenChange={setIsDetailsOpen}>
           <DialogTrigger asChild>
             <Button variant="outline" size="xs">
               <Search className="size-3" />
@@ -69,12 +69,14 @@ export function OrderTableRow({ order }: IOrderTableRowProps) {
         </Dialog>
       </TableCell>
 
-      <TableCell className="font-mono text-xs font-medium">{order.orderId}</TableCell>
+      <TableCell className="font-mono text-xs font-medium">
+        {order.orderId}
+      </TableCell>
 
       <TableCell className="text-muted-foreground">
         {formatDistanceToNow(order.createdAt, {
           locale: ptBR,
-          addSuffix: true
+          addSuffix: true,
         })}
       </TableCell>
 
@@ -87,7 +89,7 @@ export function OrderTableRow({ order }: IOrderTableRowProps) {
       <TableCell className="font-medium">
         {(order.total / 100).toLocaleString('pt-BR', {
           style: 'currency',
-          currency: 'BRL'
+          currency: 'BRL',
         })}
       </TableCell>
 

@@ -1,4 +1,9 @@
-type OrderStatus = "pending" | "canceled" | "processing" | "delivering" | "delivered"
+type OrderStatus =
+  | 'pending'
+  | 'canceled'
+  | 'processing'
+  | 'delivering'
+  | 'delivered'
 
 interface IOrderStatusProps {
   status: OrderStatus
@@ -9,7 +14,7 @@ const orderStatusMap: Record<OrderStatus, string> = {
   canceled: 'Cancelado',
   delivered: 'Entrege',
   delivering: 'Em entrega',
-  processing: 'Em preparo'
+  processing: 'Em preparo',
 }
 
 export function OrderStatus({ status }: IOrderStatusProps) {
@@ -31,7 +36,9 @@ export function OrderStatus({ status }: IOrderStatusProps) {
         <span className="size-2 rounded-full bg-amber-500" />
       )}
 
-      <span className="font-medium text-muted-foreground">{orderStatusMap[status]}</span>
+      <span className="font-medium text-muted-foreground">
+        {orderStatusMap[status]}
+      </span>
     </div>
   )
 }

@@ -1,4 +1,8 @@
+import { zodResolver } from '@hookform/resolvers/zod'
 import { Search, X } from 'lucide-react'
+import { Controller, useForm } from 'react-hook-form'
+import { useSearchParams } from 'react-router-dom'
+import { z } from 'zod'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -9,10 +13,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { z } from 'zod'
-import { Controller, useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useSearchParams } from 'react-router-dom'
 
 const orderFiltersSchema = z.object({
   orderId: z.string().optional(),
@@ -29,17 +29,18 @@ export function OrderTableFilters() {
   const customerName = searchParams.get('customerName')
   const status = searchParams.get('status')
 
-  const { register, handleSubmit, control, reset } = useForm<OrderFiltersSchema>({
-    resolver: zodResolver(orderFiltersSchema),
-    defaultValues: {
-      customerName: customerName ?? '',
-      orderId: orderId ?? '',
-      status: status ?? 'all'
-    }
-  })
+  const { register, handleSubmit, control, reset } =
+    useForm<OrderFiltersSchema>({
+      resolver: zodResolver(orderFiltersSchema),
+      defaultValues: {
+        customerName: customerName ?? '',
+        orderId: orderId ?? '',
+        status: status ?? 'all',
+      },
+    })
 
   function handleFilter({ customerName, orderId, status }: OrderFiltersSchema) {
-    setSearchParams(state => {
+    setSearchParams((state) => {
       if (orderId) {
         state.set('orderId', orderId)
       } else {
@@ -65,7 +66,7 @@ export function OrderTableFilters() {
   }
 
   function handleClearFilters() {
-    setSearchParams(state => {
+    setSearchParams((state) => {
       state.delete('orderId')
       state.delete('customerName')
       state.delete('status')
@@ -77,12 +78,15 @@ export function OrderTableFilters() {
     reset({
       customerName: '',
       orderId: '',
-      status: ''
+      status: '',
     })
   }
 
   return (
-    <form className="flex items-center gap-2" onSubmit={handleSubmit(handleFilter)}>
+    <form
+      className="flex items-center gap-2"
+      onSubmit={handleSubmit(handleFilter)}
+    >
       <span className="text-sm font-semibold">Filtros:</span>
       <Input
         placeholder="ID do pedido"
@@ -99,7 +103,7 @@ export function OrderTableFilters() {
       <Controller
         name="status"
         control={control}
-        render={({ field: { name, onChange, value,disabled } }) => {
+        render={({ field: { name, onChange, value, disabled } }) => {
           return (
             <Select
               defaultValue="all"
