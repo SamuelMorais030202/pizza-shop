@@ -4,8 +4,15 @@ interface IGetOrdersDetailsParams {
   orderId: string
 }
 
+export type StatusOrder =
+  | 'pending'
+  | 'canceled'
+  | 'processing'
+  | 'delivering'
+  | 'delivered'
+
 export interface IGetOrderDetailsResponse {
-  status: 'pending' | 'canceled' | 'processing' | 'delivering' | 'delivered'
+  status: StatusOrder
   id: string
   createdAt: string
   totalInCents: number
