@@ -88,7 +88,7 @@ export function PopularProductsChart() {
           </ResponsiveContainer>
         ) : (
           <div className="flex h-[240px] w-full items-center justify-center">
-            <Loader2 className="size-8 text-muted-foreground animate-spin" />
+            <Loader2 className="size-8 animate-spin text-muted-foreground" />
           </div>
         )}
       </CardContent>
